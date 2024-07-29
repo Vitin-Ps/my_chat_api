@@ -1,3 +1,3 @@
-ALTER TABLE tbl_usuario ADD COLUMN ativo BOOLEAN NULL;
+ALTER TABLE tbl_usuario ADD ativo TINYINT NULL;
 
-UPDATE tbl_usuario SET ativo = TRUE;
+UPDATE tbl_usuario SET ativo = 1;
