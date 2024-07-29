@@ -1,30 +1,28 @@
 FROM ubuntu:latest AS build
 
+# Instale Java e Maven
+RUN apt-get update && apt-get install -y openjdk-17-jdk maven
+
+# Copie o código fonte
+COPY . /app
+
 # Defina o diretório de trabalho
 WORKDIR /app
 
-# Atualize o sistema e instale JDK e Maven
-RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk maven && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copie o código fonte para o diretório de trabalho
-COPY . .
-
 # Compile e construa o projeto
-RUN mvn clean install
+RUN mvn clean install -e -X
 
+# Use uma imagem mais leve para o ambiente de execução
 FROM openjdk:17-jdk-slim
 
 # Defina o diretório de trabalho
 WORKDIR /app
 
-# Exponha a porta na qual o aplicativo estará rodando
+# Exponha a porta que o aplicativo usa
 EXPOSE 8080
 
-# Copie o JAR do estágio de build
+# Copie o JAR do estágio de construção
 COPY --from=build /app/target/my-chat-0.0.1-SNAPSHOT.jar app.jar
 
-# Defina o ponto de entrada do contêiner
+# Defina o comando de entrada
 ENTRYPOINT ["java", "-jar", "app.jar"]
